@@ -17,6 +17,9 @@
     },
     "allowlist": {
       "all": false,
+      "path": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "open": true
