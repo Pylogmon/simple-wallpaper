@@ -2,41 +2,26 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-
+mod system_tray;
 mod utils;
-use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use system_tray::*;
+use tauri::SystemTrayEvent;
 use utils::set_wallpaper::set_wallpaper;
 
 fn main() {
-    let quit = CustomMenuItem::new("quit".to_string(), "退出");
-    let config = CustomMenuItem::new("config".to_string(), "设置");
-    let tray_menu = SystemTrayMenu::new().add_item(quit).add_item(config);
-    let system_tray = SystemTray::new().with_menu(tray_menu);
     tauri::Builder::default()
         //注册js调用函数
         .invoke_handler(tauri::generate_handler![set_wallpaper])
         //加载托盘图标
-        .system_tray(system_tray)
+        .system_tray(build_system_tray())
         //绑定托盘事件
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    std::process::exit(0);
-                }
-                "config" => match app.get_window("config") {
-                    Some(window) => {
-                        window.set_focus().unwrap();
-                    }
-                    None => {
-                        let _config_window = tauri::WindowBuilder::new(
-                            app,
-                            "config",
-                            tauri::WindowUrl::App("index.html".into()),
-                        )
-                        .build()
-                        .unwrap();
-                    }
-                },
+                SAVE => on_save_click(),
+                UPDATE => on_update_click(),
+                CONFIG => on_config_click(app),
+                START => on_start_click(),
+                QUIT => on_quit_click(),
                 _ => {}
             },
             _ => {}
