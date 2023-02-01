@@ -27,7 +27,6 @@ fn get_img_url() -> String {
 fn download(img_url: &str) {
     let client = Client::builder().proxy(proxy()).build().unwrap();
     let res = client.get(img_url).send().unwrap();
-    res.bytes()
 }
 
 pub fn run() {
