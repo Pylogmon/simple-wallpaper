@@ -2,6 +2,7 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+mod interfaces;
 mod system_tray;
 mod utils;
 use system_tray::*;
@@ -20,7 +21,7 @@ fn main() {
                 SAVE => on_save_click(),
                 UPDATE => on_update_click(),
                 CONFIG => on_config_click(app),
-                START => on_start_click(),
+                AUTO => on_auto_click(app),
                 QUIT => on_quit_click(),
                 _ => {}
             },
